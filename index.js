@@ -13,4 +13,3 @@ app.get('/api/balance/:address', async (req, res) => {
     }
 });
 
-module.exports = app;
