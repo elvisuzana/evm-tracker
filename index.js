@@ -2,14 +2,21 @@ const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
 
-const provider = new ethers.JsonRpcProvider('https://rpc.ankr.com/eth');
+// Gunakan provider publik yang stabil
+const provider = new ethers.JsonRpcProvider('https://eth.llamarpc.com');
 
 app.get('/api/balance/:address', async (req, res) => {
     try {
-        const balance = await provider.getBalance(req.params.address);
-        res.json({ address: req.params.address, balance: ethers.formatEther(balance) });
+        const address = req.params.address;
+        if (!ethers.isAddress(address)) {
+            return res.status(400).json({ error: 'Invalid Address Format' });
+        }
+        const balance = await provider.getBalance(address);
+        res.json({ address: address, balance: ethers.formatEther(balance) });
     } catch (error) {
-        res.status(500).json({ error: 'Invalid Address' });
+        console.error(error);
+        res.status(500).json({ error: 'Failed to fetch balance' });
     }
 });
 
+module.exports = app;

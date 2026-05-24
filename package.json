@@ -1,1 +1,16 @@
 {"name": "evm-tracker", "version": "1.0.0", "main": "index.js", "scripts": {"start": "node index.js"}, "dependencies": {"express": "^4.18.2", "ethers": "^6.10.0"}}
+{
+  "name": "evm-tracker",
+  "version": "1.0.0",
+  "main": "index.js",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "4.18.2",
+    "ethers": "6.10.0"
+  }
+}
