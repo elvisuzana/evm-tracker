@@ -2,27 +2,33 @@ const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
 
-// Menggunakan provider dari Alchemy (lebih stabil untuk Vercel)
-const provider = new ethers.JsonRpcProvider('https://eth-mainnet.g.alchemy.com/v2/demo');
+// Daftar provider cadangan
+const providers = [
+    new ethers.JsonRpcProvider('https://eth.llamarpc.com'),
+    new ethers.JsonRpcProvider('https://cloudflare-eth.com'),
+    new ethers.JsonRpcProvider('https://rpc.ankr.com/eth')
+];
 
 app.get('/', (req, res) => {
-    res.send('API is running!');
+    res.send('Tracker EVM Aktif!');
 });
 
 app.get('/api/balance/:address', async (req, res) => {
-    try {
-        const address = req.params.address;
-        if (!ethers.isAddress(address)) {
-            return res.status(400).json({ error: 'Invalid Address' });
-        }
-        
-        // Cek koneksi ke provider
-        const balance = await provider.getBalance(address);
-        res.json({ address: address, balance: ethers.formatEther(balance) });
-    } catch (error) {
-        // Kirim detail error agar kita tahu masalahnya
-        res.status(500).json({ error: error.message });
+    const address = req.params.address;
+    if (!ethers.isAddress(address)) {
+        return res.status(400).json({ error: 'Invalid Address' });
     }
+
+    // Mencoba provider satu per satu
+    for (const provider of providers) {
+        try {
+            const balance = await provider.getBalance(address);
+            return res.json({ address: address, balance: ethers.formatEther(balance) });
+        } catch (e) {
+            continue; // Coba provider berikutnya jika gagal
+        }
+    }
+    res.status(500).json({ error: 'Semua provider gagal mengambil data' });
 });
 
 module.exports = app;
