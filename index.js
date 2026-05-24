@@ -2,8 +2,8 @@ const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
 
-// Gunakan port dari environment atau default ke 3000
-const PORT = process.env.PORT || 3000;
+// Railway biasanya memberikan port lewat process.env.PORT, jika tidak ada pakai 8080
+const PORT = process.env.PORT || 8080;
 
 const providers = [
     new ethers.JsonRpcProvider('https://eth.llamarpc.com'),
@@ -32,9 +32,7 @@ app.get('/api/balance/:address', async (req, res) => {
     res.status(500).json({ error: 'Semua provider gagal mengambil data' });
 });
 
-// TAMBAHKAN BARIS INI: Agar aplikasi benar-benar "nyala" dan mendengarkan port
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// PENTING: Gunakan '0.0.0.0' agar bisa diakses publik
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
 });
-
-module.exports = app;
