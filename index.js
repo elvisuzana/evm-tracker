@@ -1,8 +1,6 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
-
-// Gunakan provider publik yang stabil
 const provider = new ethers.JsonRpcProvider('https://eth.llamarpc.com');
 
 app.get('/api/balance/:address', async (req, res) => {
@@ -14,7 +12,6 @@ app.get('/api/balance/:address', async (req, res) => {
         const balance = await provider.getBalance(address);
         res.json({ address: address, balance: ethers.formatEther(balance) });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: 'Failed to fetch balance' });
     }
 });
