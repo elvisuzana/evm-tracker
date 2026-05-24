@@ -1,23 +1,27 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
-const provider = new ethers.JsonRpcProvider('https://eth.llamarpc.com');
 
-// Tambahkan rute dasar ini agar tidak error 500
+// Menggunakan provider dari Alchemy (lebih stabil untuk Vercel)
+const provider = new ethers.JsonRpcProvider('https://eth-mainnet.g.alchemy.com/v2/demo');
+
 app.get('/', (req, res) => {
-    res.send('EVM Tracker API is running! Gunakan /api/balance/ALAMAT_DOMPET untuk mengecek saldo.');
+    res.send('API is running!');
 });
 
 app.get('/api/balance/:address', async (req, res) => {
     try {
         const address = req.params.address;
         if (!ethers.isAddress(address)) {
-            return res.status(400).json({ error: 'Invalid Address Format' });
+            return res.status(400).json({ error: 'Invalid Address' });
         }
+        
+        // Cek koneksi ke provider
         const balance = await provider.getBalance(address);
         res.json({ address: address, balance: ethers.formatEther(balance) });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch balance' });
+        // Kirim detail error agar kita tahu masalahnya
+        res.status(500).json({ error: error.message });
     }
 });
 
