@@ -32,7 +32,9 @@ app.get('/api/balance/:address', async (req, res) => {
     res.status(500).json({ error: 'Semua provider gagal mengambil data' });
 });
 
-// PENTING: Gunakan '0.0.0.0' agar bisa diakses publik
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running on port ${PORT}`);
+// ... kode bagian atas tetap sama ...
+
+const server = app.listen(process.env.PORT || 8080, '0.0.0.0', () => {
+    console.log(`Server is running on port ${server.address().port}`);
 });
+
