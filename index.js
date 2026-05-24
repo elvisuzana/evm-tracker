@@ -2,7 +2,7 @@ const express = require('express');
 const { ethers } = require('ethers');
 const app = express();
 
-// Railway biasanya memberikan port lewat process.env.PORT, jika tidak ada pakai 8080
+// Railway memberikan port lewat environment variable, default ke 8080 jika tidak ada
 const PORT = process.env.PORT || 8080;
 
 const providers = [
@@ -20,21 +20,16 @@ app.get('/api/balance/:address', async (req, res) => {
     if (!ethers.isAddress(address)) {
         return res.status(400).json({ error: 'Invalid Address' });
     }
-
     for (const provider of providers) {
         try {
             const balance = await provider.getBalance(address);
             return res.json({ address: address, balance: ethers.formatEther(balance) });
-        } catch (e) {
-            continue;
-        }
+        } catch (e) { continue; }
     }
-    res.status(500).json({ error: 'Semua provider gagal mengambil data' });
+    res.status(500).json({ error: 'Semua provider gagal' });
 });
 
-// ... kode bagian atas tetap sama ...
-
-const server = app.listen(process.env.PORT || 8080, '0.0.0.0', () => {
-    console.log(`Server is running on port ${server.address().port}`);
+// PENTING: Gunakan 0.0.0.0 agar aplikasi bisa diakses dari luar container
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
